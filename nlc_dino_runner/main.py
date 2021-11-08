@@ -6,3 +6,4 @@ if __name__ == "__main__":
     game.run()
 
 print("hello world")
+print("Create a new branch")
