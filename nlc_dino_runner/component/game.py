@@ -1,5 +1,6 @@
 import pygame
 
+from nlc_dino_runner.component.obstacles.obstacle_manager import ObstacleManager
 from nlc_dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITTLE, FPS
 from nlc_dino_runner.component.dinosaur import Dinosaur
 
@@ -15,7 +16,8 @@ class Game:
         self.game_speed = 20
         self.x_pos_bg = 0
         self.y_pos_bg = 380
-        self.player=Dinosaur()
+        self.player = Dinosaur()
+        self.obstacle = ObstacleManager()
 
     def run(self):
         self.playing = True
@@ -28,25 +30,28 @@ class Game:
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.playing=False
+                self.playing = False
 
     def update(self):
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
+        self.obstacle.update(self)
 
     def draw(self):
         self.clock.tick(FPS)
         self.screen.fill((255,255,255))
         self.draw_background()
         self.player.draw(self.screen)
+        self.obstacle.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
 
     def draw_background(self):
-        image_width=BG.get_width()
-        self.screen.blit(BG,(self.x_pos_bg,self.y_pos_bg))
-        self.screen.blit(BG,(image_width+self.x_pos_bg,self.y_pos_bg))
+        image_width = BG.get_width()
+
+        self.screen.blit(BG, (self.x_pos_bg, self.y_pos_bg))
+        self.screen.blit(BG, (image_width+self.x_pos_bg, self.y_pos_bg))
         if self.x_pos_bg <= -image_width:
-            self.screen.blit(BG,(image_width+self.x_pos_bg,self.y_pos_bg))
-            self.x_pos_bg=0
-        self.x_pos_bg-=self.game_speed
+            self.screen.blit(BG, (image_width+self.x_pos_bg, self.y_pos_bg))
+            self.x_pos_bg = 0
+        self.x_pos_bg -= self.game_speed
