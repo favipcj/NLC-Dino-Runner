@@ -29,7 +29,9 @@ class Dinosaur(Sprite):
 
             self.duck()
         if self.dino_jump:
+            pygame.mixer.music.play()
             self.jump()
+
 
         if user_input[pygame.K_DOWN] and not self.dino_jump:
             self.dino_run = False

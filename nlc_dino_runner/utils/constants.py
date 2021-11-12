@@ -1,6 +1,6 @@
 import pygame
 import os
-
+pygame.mixer.init()
 TITTLE = "Chrome Dino Runner"
 # Global Constants
 SCREEN_HEIGHT = 600
@@ -58,7 +58,9 @@ BIRD = [
     pygame.image.load(os.path.join(IMG_DIR, "Bird/Bird1.png")),
     pygame.image.load(os.path.join(IMG_DIR, "Bird/Bird2.png")),
 ]
-
+SOUND = [
+    pygame.mixer.music.load('C:/Users/carol/Documents/dino_test/NCL-Dino-Runner/nlc_dino_runner/assets/sound/2.mp3'),
+]
 CLOUD = pygame.image.load(os.path.join(IMG_DIR, 'Other/Cloud.png'))
 SHIELD = pygame.image.load(os.path.join(IMG_DIR, 'Other/shield.png'))
 HAMMER = pygame.image.load(os.path.join(IMG_DIR, 'Other/hammer.png'))
