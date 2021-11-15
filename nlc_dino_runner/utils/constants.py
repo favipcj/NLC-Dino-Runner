@@ -6,6 +6,8 @@ TITTLE = "Chrome Dino Runner"
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
 FPS = 30
+FONT_STYLE = 'freesansbold.ttf'
+black_color = (0, 0, 0)
 IMG_DIR = os.path.join(os.path.dirname(__file__), "..", "assets")
 
 # Assets Constants
@@ -71,3 +73,4 @@ HEART = pygame.image.load(os.path.join(IMG_DIR, 'Other/SmallHeart.png'))
 
 ICON = pygame.image.load(os.path.join(IMG_DIR, 'DinoWallpaper.png'))
 DEFAULT_TYPE = "default"
+SHIELD_TYPE = "shield"
