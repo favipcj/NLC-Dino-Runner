@@ -1,9 +1,11 @@
 import pygame
 
+from nlc_dino_runner.component.heart.life import Life
+from nlc_dino_runner.component.heart.life_manager import LifeManager
 from nlc_dino_runner.utils import text_utils
 from nlc_dino_runner.component.power_up.power_up_manager import PowerUpManager
 from nlc_dino_runner.component.obstacles.obstacle_manager import ObstacleManager
-from nlc_dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITTLE, FPS
+from nlc_dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITTLE, FPS,numbers_life
 from nlc_dino_runner.component.dinosaur import Dinosaur
 
 
@@ -21,9 +23,12 @@ class Game:
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
         self.power_up_manager = PowerUpManager()
+        self.life = Life()
+        self.life_manager = LifeManager()
         self.points = 0
         self.running = True
         self.death_count = 0
+        self.lifes=numbers_life
 
     def score(self):
         self.points += 1
@@ -51,7 +56,6 @@ class Game:
             text_element, text_element_rec = text_utils.get_centered_message('Press any key to restart ')
             self.screen.blit(text_element, text_element_rec)
         if (self.death_count>=1):
-
             text_element, text_element_rec = text_utils.get_centered_message('death count :' + str(self.death_count), height = half_height + 50)
         self.screen.blit(text_element, text_element_rec)
         self.screen.blit(ICON, (half_width-40, half_height-150))
@@ -80,6 +84,7 @@ class Game:
         while self.running:
             if not self.playing:
                 self.show_menu()
+                self.lifes=numbers_life
 
     def events(self):
         for event in pygame.event.get():
@@ -101,6 +106,11 @@ class Game:
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.power_up_manager.draw(self.screen)
+        #self.life_manager.draw(self.screen)
+        for x in range(0, self.lifes):
+            self.life.draw(self.screen)
+            self.life.coordinates(self.lifes)
+
         self.score()
         pygame.display.update()
         pygame.display.flip()

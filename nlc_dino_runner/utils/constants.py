@@ -8,6 +8,7 @@ SCREEN_WIDTH = 1100
 FPS = 30
 FONT_STYLE = 'freesansbold.ttf'
 black_color = (0, 0, 0)
+numbers_life=3
 IMG_DIR = os.path.join(os.path.dirname(__file__), "..", "assets")
 
 # Assets Constants
