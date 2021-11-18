@@ -21,7 +21,7 @@ class ObstacleManager:
 
                 if game.player.shield:
                     self.obstacles.remove(obstacle)
-                elif game.lifes>0:
+                elif game.lifes>1:
                     self.obstacles.remove(obstacle)
                     game.lifes -= 1
                     #print(game.lifes)

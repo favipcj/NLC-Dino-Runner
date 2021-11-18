@@ -3,8 +3,9 @@ import pygame
 from pygame.sprite import Sprite
 
 
-from nlc_dino_runner.utils.constants import DEFAULT_TYPE, RUNNING, FONT_STYLE, black_color, DUCKING, JUMPING, SHIELD_TYPE, RUNNING_SHIELD, \
-    DUCKING_SHIELD, JUMPING_SHIELD
+from nlc_dino_runner.utils.constants import DEFAULT_TYPE, RUNNING, FONT_STYLE, black_color, DUCKING, JUMPING, \
+    SHIELD_TYPE, RUNNING_SHIELD, \
+    DUCKING_SHIELD, JUMPING_SHIELD, RUNNING_HAMMER, DUCKING_HAMMER, JUMPING_HAMMER, HAMMER_TYPE
 
 
 class Dinosaur(Sprite):
@@ -15,9 +16,9 @@ class Dinosaur(Sprite):
 
     def __init__(self):
        # self.image = RUNNING[0]
-        self.run_img = {DEFAULT_TYPE: RUNNING, SHIELD_TYPE: RUNNING_SHIELD}
-        self.duck_img = {DEFAULT_TYPE: DUCKING, SHIELD_TYPE: DUCKING_SHIELD}
-        self.jump_img = {DEFAULT_TYPE: JUMPING, SHIELD_TYPE: JUMPING_SHIELD}
+        self.run_img = {DEFAULT_TYPE: RUNNING, SHIELD_TYPE: RUNNING_SHIELD, HAMMER_TYPE: RUNNING_HAMMER}
+        self.duck_img = {DEFAULT_TYPE: DUCKING, SHIELD_TYPE: DUCKING_SHIELD, HAMMER_TYPE: DUCKING_HAMMER}
+        self.jump_img = {DEFAULT_TYPE: JUMPING, SHIELD_TYPE: JUMPING_SHIELD, HAMMER_TYPE: JUMPING_HAMMER}
         self.type = DEFAULT_TYPE
         self.image = self.run_img[self.type][0]
 

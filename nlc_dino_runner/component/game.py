@@ -2,11 +2,14 @@ import pygame
 
 from nlc_dino_runner.component.heart.life import Life
 from nlc_dino_runner.component.heart.life_manager import LifeManager
+from nlc_dino_runner.component.power_up.hammer.hammer import Hammer
+from nlc_dino_runner.component.power_up.hammer.hammer_manager import HammerManager
 from nlc_dino_runner.utils import text_utils
 from nlc_dino_runner.component.power_up.power_up_manager import PowerUpManager
 from nlc_dino_runner.component.obstacles.obstacle_manager import ObstacleManager
 from nlc_dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITTLE, FPS,numbers_life
 from nlc_dino_runner.component.dinosaur import Dinosaur
+
 
 
 class Game:
@@ -25,6 +28,8 @@ class Game:
         self.power_up_manager = PowerUpManager()
         self.life = Life()
         self.life_manager = LifeManager()
+        self.hammer = Hammer()
+        self.hammer_manager = HammerManager()
         self.points = 0
         self.running = True
         self.death_count = 0
@@ -97,6 +102,7 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
+        self.hammer_manager.update(self.points, self.game_speed, self.player)
         self.power_up_manager.update(self.points, self.game_speed, self.player)
 
     def draw(self):
@@ -106,10 +112,12 @@ class Game:
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.power_up_manager.draw(self.screen)
+        self.hammer_manager.draw(self.screen)
         #self.life_manager.draw(self.screen)
-        for x in range(0, self.lifes):
-            self.life.draw(self.screen)
-            self.life.coordinates(self.lifes)
+        for x in range(0, self.lifes):#dibujamos el numero de vidas que queremos
+            self.life.draw(self.screen) # dibuja el corazon
+            self.life.coordinates(self.lifes)#actualizamos las coordenadas
+
 
         self.score()
         pygame.display.update()
