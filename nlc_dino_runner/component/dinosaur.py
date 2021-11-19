@@ -1,12 +1,10 @@
 import pygame
-
 from pygame.sprite import Sprite
-
-
+from nlc_dino_runner.component.power_up.hammer.hammer import HAMMER
 from nlc_dino_runner.utils.constants import DEFAULT_TYPE, RUNNING, FONT_STYLE, black_color, DUCKING, JUMPING, \
     SHIELD_TYPE, RUNNING_SHIELD, \
-    DUCKING_SHIELD, JUMPING_SHIELD, RUNNING_HAMMER, DUCKING_HAMMER, JUMPING_HAMMER, HAMMER_TYPE
-
+    DUCKING_SHIELD, JUMPING_SHIELD, RUNNING_HAMMER, DUCKING_HAMMER, JUMPING_HAMMER, HAMMER_TYPE, HAMMER
+from nlc_dino_runner.utils.constants import HAMMER, SCREEN_HEIGHT, HAMMER_TYPE
 
 class Dinosaur(Sprite):
     X_POS = 80
@@ -21,46 +19,48 @@ class Dinosaur(Sprite):
         self.jump_img = {DEFAULT_TYPE: JUMPING, SHIELD_TYPE: JUMPING_SHIELD, HAMMER_TYPE: JUMPING_HAMMER}
         self.type = DEFAULT_TYPE
         self.image = self.run_img[self.type][0]
-
+        self.image_hammer=HAMMER
+        self.hammer_rect=self.image_hammer.get_rect()
         self.shield = False
         self.shield_time_up = 0
         self.show_text = False
-
         self.dino_rect = self.image.get_rect()
+
         self.dino_rect.x = self.X_POS
         self.dino_rect.y = self.Y_POS
         self.step_index = 0
         self.dino_run = True
         self.dino_duck = False
         self.dino_jump = False
+        self.dino_thrown_hammer=False #lanzamiento de martillo
         self.jum_vel = self.JUMP_VEL
+        #self.hummer=self.image.get_rect()
 
     def update(self, user_input):
         if self.dino_run:
-
             self.run()
         if self.dino_duck:
-
             self.duck()
         if self.dino_jump:
             pygame.mixer.music.play()
             self.jump()
-
+        if self.dino_thrown_hammer:
+            self.lanzar_martillo()
         if user_input[pygame.K_DOWN] and not self.dino_jump:
             self.dino_run = False
             self.dino_duck = True
             self.dino_jump = False
-
         elif user_input[pygame.K_UP] and not self.dino_jump:
             self.dino_run = False
             self.dino_duck = False
             self.dino_jump = True
-
+        elif user_input[pygame.K_SPACE] and not self.dino_duck:
+            self.dino_thrown_hammer=True
+            #print("tirando martillo")
         elif not self.dino_jump:
             self.dino_run = True
             self.dino_duck = False
             self.dino_jump = False
-
         if self.step_index >= 10:
             self.step_index = 0
 
@@ -94,6 +94,12 @@ class Dinosaur(Sprite):
             self.dino_jump = False
             self.jum_vel = self.JUMP_VEL
 
+    def lanzar_martillo(self):
+        pass
+        #self.image = HAMMER
+        #self.type = HAMMER_TYPE
+        #self.rect = self.image.get_rect()
+
     def check_invincibility(self, screen):
         if self.shield:
             time_to_show = round((self.shield_time_up - pygame.time.get_ticks()) / 1000, 2)
@@ -112,4 +118,7 @@ class Dinosaur(Sprite):
         if self.type == current_type:
             self.type = DEFAULT_TYPE
 
+    def resettype(self):
+        self.type=DEFAULT_TYPE #cambia a default al dinosaurio
 
+            

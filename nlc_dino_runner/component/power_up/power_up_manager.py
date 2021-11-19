@@ -2,7 +2,7 @@ import random
 import pygame
 
 from nlc_dino_runner.component.power_up.shield import Shield
-
+from nlc_dino_runner.component.power_up.hammer.army import Army
 
 class PowerUpManager:
     def __init__(self):

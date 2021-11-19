@@ -9,7 +9,6 @@ class LifeManager:
 
     def update(self, game):
         #if game.player.dino_rect.colliderect(obstacle.rect):
-
         if self.life > 0:
             self.life -= 1
         else:

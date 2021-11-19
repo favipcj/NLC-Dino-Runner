@@ -33,8 +33,9 @@ class Game:
         self.points = 0
         self.running = True
         self.death_count = 0
-        self.lifes=numbers_life
-
+        self.lifes = numbers_life
+        self.speed_hammer=20
+        self.press_space=False
     def score(self):
         self.points += 1
         if self.points % 20 == 0:
@@ -54,7 +55,6 @@ class Game:
         half_width = SCREEN_WIDTH // 2
         half_height = SCREEN_HEIGHT // 2
         if self.death_count==0:
-
             text_element, text_element_rec = text_utils.get_centered_message('Press any key to start ')
             self.screen.blit(text_element, text_element_rec)
         else:
@@ -89,7 +89,8 @@ class Game:
         while self.running:
             if not self.playing:
                 self.show_menu()
-                self.lifes=numbers_life
+                self.lifes=numbers_life #resetea nro de vidas
+                self.player.resettype() #cuando se muere resetea al dino
 
     def events(self):
         for event in pygame.event.get():
@@ -102,7 +103,7 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
-        self.hammer_manager.update(self.points, self.game_speed, self.player)
+        self.hammer_manager.update(self.points, self.game_speed, self.player) #aparece el martillo
         self.power_up_manager.update(self.points, self.game_speed, self.player)
 
     def draw(self):
@@ -113,11 +114,19 @@ class Game:
         self.obstacle_manager.draw(self.screen)
         self.power_up_manager.draw(self.screen)
         self.hammer_manager.draw(self.screen)
-        #self.life_manager.draw(self.screen)
+        
+
+        user_input = pygame.key.get_pressed() #si se presiona space
+        if user_input[pygame.K_SPACE]:
+            self.press_space=True   #si es presionado, cambiamos el valor a true para enviarlo a una funcion
+        #en esta funciio, recibe, el scree, velocidad del martillo, y el valor si se ha presionado
+        self.speed_hammer, self.press_space = self.hammer.draw_hammer(self.screen, self.speed_hammer, self.press_space)
+        #retorna dos variables, una nueva velocidad del martillo y el valor cambiado del press space
+
+
         for x in range(0, self.lifes):#dibujamos el numero de vidas que queremos
             self.life.draw(self.screen) # dibuja el corazon
             self.life.coordinates(self.lifes)#actualizamos las coordenadas
-
 
         self.score()
         pygame.display.update()
@@ -125,7 +134,6 @@ class Game:
 
     def draw_background(self):
         image_width = BG.get_width()
-
         self.screen.blit(BG, (self.x_pos_bg, self.y_pos_bg))
         self.screen.blit(BG, (image_width+self.x_pos_bg, self.y_pos_bg))
         if self.x_pos_bg <= -image_width:

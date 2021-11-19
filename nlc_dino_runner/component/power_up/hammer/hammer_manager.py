@@ -2,6 +2,7 @@ import random
 import pygame
 
 from nlc_dino_runner.component.power_up.hammer.army import Hammer
+from nlc_dino_runner.utils.constants import SCREEN_HEIGHT
 
 
 class HammerManager:
@@ -42,3 +43,11 @@ class HammerManager:
     def draw(self, screen):
         for hammer in self.hammer:
             hammer.draw(screen)
+
+    def removehammer(self):
+        self.hammer.remove(x)
+
+    def hammer_throw(self, screen, user_input):
+        pass
+
+
