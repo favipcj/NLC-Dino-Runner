@@ -1,0 +1,2 @@
+def ornaments():
+    return None

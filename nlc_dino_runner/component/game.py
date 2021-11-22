@@ -2,14 +2,14 @@ import pygame
 
 from nlc_dino_runner.component.heart.life import Life
 from nlc_dino_runner.component.heart.life_manager import LifeManager
-from nlc_dino_runner.component.power_up.hammer.hammer import Hammer
-from nlc_dino_runner.component.power_up.hammer.hammer_manager import HammerManager
+from nlc_dino_runner.component.ornaments.cloud import Cloud
+from nlc_dino_runner.component.power_up.hammer import Hammer
+from nlc_dino_runner.component.power_up.hammer_power_up import HammerPowerUp
 from nlc_dino_runner.utils import text_utils
 from nlc_dino_runner.component.power_up.power_up_manager import PowerUpManager
 from nlc_dino_runner.component.obstacles.obstacle_manager import ObstacleManager
-from nlc_dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITTLE, FPS,numbers_life
+from nlc_dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITTLE, FPS, numbers_life,HAMMERS
 from nlc_dino_runner.component.dinosaur import Dinosaur
-
 
 
 class Game:
@@ -29,17 +29,21 @@ class Game:
         self.life = Life()
         self.life_manager = LifeManager()
         self.hammer = Hammer()
-        self.hammer_manager = HammerManager()
+        self.hammer_manager = HammerPowerUp()
+        self.cloud = Cloud()
         self.points = 0
         self.running = True
         self.death_count = 0
         self.lifes = numbers_life
-        self.speed_hammer=20
-        self.press_space=False
+        self.speed_hammer = 20
+        self.power_hammer=False
+        self.number_hammer=HAMMERS
+        self.tomo_martillo=False
+
     def score(self):
         self.points += 1
         if self.points % 20 == 0:
-            self.game_speed += 1
+            self.game_speed += 0.5
         score_element, score_element_rec = text_utils.get_score_element(self.points)
         self.screen.blit(score_element, score_element_rec)
         self.player.check_invincibility(self.screen)
@@ -54,16 +58,17 @@ class Game:
     def print_menu_elements(self):
         half_width = SCREEN_WIDTH // 2
         half_height = SCREEN_HEIGHT // 2
-        if self.death_count==0:
+        if self.death_count == 0:
             text_element, text_element_rec = text_utils.get_centered_message('Press any key to start ')
             self.screen.blit(text_element, text_element_rec)
         else:
             text_element, text_element_rec = text_utils.get_centered_message('Press any key to restart ')
             self.screen.blit(text_element, text_element_rec)
-        if (self.death_count>=1):
-            text_element, text_element_rec = text_utils.get_centered_message('death count :' + str(self.death_count), height = half_height + 50)
+        if (self.death_count >= 1):
+            text_element, text_element_rec = text_utils.get_centered_message('death count :' + str(self.death_count),
+                                                                             height=half_height + 50)
         self.screen.blit(text_element, text_element_rec)
-        self.screen.blit(ICON, (half_width-40, half_height-150))
+        self.screen.blit(ICON, (half_width - 40, half_height - 150))
 
     def handle_key_events_on_menu(self):
         for event in pygame.event.get():
@@ -89,8 +94,10 @@ class Game:
         while self.running:
             if not self.playing:
                 self.show_menu()
-                self.lifes=numbers_life #resetea nro de vidas
-                self.player.resettype() #cuando se muere resetea al dino
+                self.lifes = numbers_life  # resetea nro de vidas
+                self.player.resettype()  # cuando se muere resetea al dino
+                self.reset_game() #resetea la velocidad
+                self.power_up_manager.reset_hammers()
 
     def events(self):
         for event in pygame.event.get():
@@ -103,8 +110,9 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
-        self.hammer_manager.update(self.points, self.game_speed, self.player) #aparece el martillo
-        self.power_up_manager.update(self.points, self.game_speed, self.player)
+        self.power_hammer,self.tomo_martillo=self.power_up_manager.update(self.points, self.game_speed, self.player, user_input)
+        self.number_hammer=self.power_up_manager.lanzar_hammer(user_input,self.power_hammer,self.player)
+        self.cloud.update(self.game_speed)
 
     def draw(self):
         self.clock.tick(FPS)
@@ -113,21 +121,15 @@ class Game:
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.power_up_manager.draw(self.screen)
-        self.hammer_manager.draw(self.screen)
-        
+        self.cloud.draw(self.screen)
 
-        user_input = pygame.key.get_pressed() #si se presiona space
-        if user_input[pygame.K_SPACE]:
-            self.press_space=True   #si es presionado, cambiamos el valor a true para enviarlo a una funcion
-        #en esta funciio, recibe, el scree, velocidad del martillo, y el valor si se ha presionado
-        self.speed_hammer, self.press_space = self.hammer.draw_hammer(self.screen, self.speed_hammer, self.press_space)
-        #retorna dos variables, una nueva velocidad del martillo y el valor cambiado del press space
-
-
-        for x in range(0, self.lifes):#dibujamos el numero de vidas que queremos
-            self.life.draw(self.screen) # dibuja el corazon
-            self.life.coordinates(self.lifes)#actualizamos las coordenadas
-
+        for x in range(0, self.lifes):  # dibujamos el numero de vidas que queremos
+            self.life.draw(self.screen)  # dibuja el corazon
+            self.life.coordinates(self.lifes)  # actualizamos las coordenadas
+        if (self.tomo_martillo==True):
+            for x in range(0, self.number_hammer):  # dibujamos el numero de vidas que queremos
+                self.hammer.draw_hammer(self.screen)  # dibuja el martillo
+                self.hammer.coordinates(self.number_hammer)  # actualizamos las coordenadas
         self.score()
         pygame.display.update()
         pygame.display.flip()
@@ -135,8 +137,11 @@ class Game:
     def draw_background(self):
         image_width = BG.get_width()
         self.screen.blit(BG, (self.x_pos_bg, self.y_pos_bg))
-        self.screen.blit(BG, (image_width+self.x_pos_bg, self.y_pos_bg))
+        self.screen.blit(BG, (image_width + self.x_pos_bg, self.y_pos_bg))
         if self.x_pos_bg <= -image_width:
-            self.screen.blit(BG, (image_width+self.x_pos_bg, self.y_pos_bg))
+            self.screen.blit(BG, (image_width + self.x_pos_bg, self.y_pos_bg))
             self.x_pos_bg = 0
         self.x_pos_bg -= self.game_speed
+
+    def reset_game(self):
+        self.game_speed=20

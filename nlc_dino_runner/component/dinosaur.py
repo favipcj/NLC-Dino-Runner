@@ -1,10 +1,11 @@
 import pygame
 from pygame.sprite import Sprite
-from nlc_dino_runner.component.power_up.hammer.hammer import HAMMER
+from nlc_dino_runner.component.power_up.hammer import Hammer
 from nlc_dino_runner.utils.constants import DEFAULT_TYPE, RUNNING, FONT_STYLE, black_color, DUCKING, JUMPING, \
     SHIELD_TYPE, RUNNING_SHIELD, \
-    DUCKING_SHIELD, JUMPING_SHIELD, RUNNING_HAMMER, DUCKING_HAMMER, JUMPING_HAMMER, HAMMER_TYPE, HAMMER
+    DUCKING_SHIELD, JUMPING_SHIELD, RUNNING_HAMMER, DUCKING_HAMMER, JUMPING_HAMMER, HAMMER_TYPE, HAMMER,DINO_DEAD
 from nlc_dino_runner.utils.constants import HAMMER, SCREEN_HEIGHT, HAMMER_TYPE
+
 
 class Dinosaur(Sprite):
     X_POS = 80
@@ -13,14 +14,14 @@ class Dinosaur(Sprite):
     JUMP_VEL = 8.5
 
     def __init__(self):
-       # self.image = RUNNING[0]
+        # self.image = RUNNING[0]
         self.run_img = {DEFAULT_TYPE: RUNNING, SHIELD_TYPE: RUNNING_SHIELD, HAMMER_TYPE: RUNNING_HAMMER}
         self.duck_img = {DEFAULT_TYPE: DUCKING, SHIELD_TYPE: DUCKING_SHIELD, HAMMER_TYPE: DUCKING_HAMMER}
         self.jump_img = {DEFAULT_TYPE: JUMPING, SHIELD_TYPE: JUMPING_SHIELD, HAMMER_TYPE: JUMPING_HAMMER}
         self.type = DEFAULT_TYPE
         self.image = self.run_img[self.type][0]
-        self.image_hammer=HAMMER
-        self.hammer_rect=self.image_hammer.get_rect()
+        self.image_hammer = HAMMER
+        self.hammer_rect = self.image_hammer.get_rect()
         self.shield = False
         self.shield_time_up = 0
         self.show_text = False
@@ -32,9 +33,13 @@ class Dinosaur(Sprite):
         self.dino_run = True
         self.dino_duck = False
         self.dino_jump = False
-        self.dino_thrown_hammer=False #lanzamiento de martillo
+
         self.jum_vel = self.JUMP_VEL
-        #self.hummer=self.image.get_rect()
+        self.hammer=False
+        self.hammer_time_up=0
+        self.hammer_speed=15
+        self.throw_hammer=False
+        # self.hummer=self.image.get_rect()
 
     def update(self, user_input):
         if self.dino_run:
@@ -44,8 +49,7 @@ class Dinosaur(Sprite):
         if self.dino_jump:
             pygame.mixer.music.play()
             self.jump()
-        if self.dino_thrown_hammer:
-            self.lanzar_martillo()
+
         if user_input[pygame.K_DOWN] and not self.dino_jump:
             self.dino_run = False
             self.dino_duck = True
@@ -54,9 +58,7 @@ class Dinosaur(Sprite):
             self.dino_run = False
             self.dino_duck = False
             self.dino_jump = True
-        elif user_input[pygame.K_SPACE] and not self.dino_duck:
-            self.dino_thrown_hammer=True
-            #print("tirando martillo")
+
         elif not self.dino_jump:
             self.dino_run = True
             self.dino_duck = False
@@ -94,24 +96,20 @@ class Dinosaur(Sprite):
             self.dino_jump = False
             self.jum_vel = self.JUMP_VEL
 
-    def lanzar_martillo(self):
-        pass
-        #self.image = HAMMER
-        #self.type = HAMMER_TYPE
-        #self.rect = self.image.get_rect()
+
 
     def check_invincibility(self, screen):
         if self.shield:
             time_to_show = round((self.shield_time_up - pygame.time.get_ticks()) / 1000, 2)
             if time_to_show >= 0:
                 if self.show_text:
-                    font = pygame.font.Font(FONT_STYLE,15)
+                    font = pygame.font.Font(FONT_STYLE, 15)
                     text = font.render(f'shield enable for {time_to_show}', True, black_color)
                     text_rect = text.get_rect()
                     text_rect.center = (500, 50)
                     screen.blit(text, text_rect)
             else:
-                self.shield= False
+                self.shield = False
                 self.update_type_to_default(SHIELD_TYPE)
 
     def update_type_to_default(self, current_type):
@@ -119,6 +117,6 @@ class Dinosaur(Sprite):
             self.type = DEFAULT_TYPE
 
     def resettype(self):
-        self.type=DEFAULT_TYPE #cambia a default al dinosaurio
-
-            
+        self.type = DEFAULT_TYPE  # cambia a default al dinosaurio
+    def dino_dead(self):
+        self.type= DINO_DEAD
